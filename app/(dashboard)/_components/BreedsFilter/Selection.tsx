@@ -3,10 +3,15 @@ import BreedsFilterLabel from "./Label";
 
 interface Props {
   breeds: string[];
+  onDeselect: (breed: string) => void;
   onClear: () => void;
 }
 
-export default function BreedsFilterSelection({ breeds, onClear }: Props) {
+export default function BreedsFilterSelection({
+  breeds,
+  onDeselect,
+  onClear,
+}: Props) {
   const renderLabels = () => {
     if (!breeds.length) {
       return "Select breeds...";
@@ -14,7 +19,7 @@ export default function BreedsFilterSelection({ breeds, onClear }: Props) {
 
     if (breeds.length <= 5) {
       return breeds.map((breed) => (
-        <BreedsFilterLabel key={breed} breed={breed} />
+        <BreedsFilterLabel key={breed} breed={breed} onDeselect={onDeselect} />
       ));
     }
 
@@ -23,7 +28,11 @@ export default function BreedsFilterSelection({ breeds, onClear }: Props) {
     return (
       <>
         {firstFiveBreeds.map((breed) => (
-          <BreedsFilterLabel key={breed} breed={breed} />
+          <BreedsFilterLabel
+            key={breed}
+            breed={breed}
+            onDeselect={onDeselect}
+          />
         ))}
         <span className="m-1 px-2 py-1">
           + {moreCount} {moreCount > 1 ? "breeds" : "breed"}

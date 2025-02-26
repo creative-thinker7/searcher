@@ -22,6 +22,10 @@ export default function BreedsFilter({ selectedBreeds, onSelect }: Props) {
     breed.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  const handleDeselectBreed = (breed: string) => {
+    onSelect(selectedBreeds.filter((b) => b !== breed));
+  };
+
   return (
     <div className="min-w-[280px]">
       <Listbox as="div" value={selectedBreeds} onChange={onSelect} multiple>
@@ -30,6 +34,7 @@ export default function BreedsFilter({ selectedBreeds, onSelect }: Props) {
             <div className="relative">
               <BreedsFilterSelection
                 breeds={selectedBreeds}
+                onDeselect={handleDeselectBreed}
                 onClear={() => {
                   onSelect([]);
                 }}

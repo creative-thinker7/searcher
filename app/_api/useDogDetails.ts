@@ -4,7 +4,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { callApi, chunkArray } from "@/libs";
 import { Dog } from "@/types";
 
-const MAX_IDS_PER_CALL = 100;
+const MAX_IDS_PER_CALL = 25;
 
 export function useDogDetails(dogIds: string[]) {
   const router = useRouter();
@@ -16,21 +16,42 @@ export function useDogDetails(dogIds: string[]) {
       const chunks = chunkArray(dogIds, MAX_IDS_PER_CALL);
 
       const dogs: Dog[] = [];
-      for await (const idsPerPage of chunks) {
-        const response = await callApi({
-          url: "/dogs",
-          method: "POST",
-          body: idsPerPage,
-        });
+      await Promise.all(
+        chunks.map(async (idsPerPage) => {
+          try {
+            const response = await callApi({
+              url: "/dogs",
+              method: "POST",
+              body: idsPerPage,
+            });
 
-        if (response.status === 401) {
-          router.push("/login");
-          return null;
-        }
+            if (response.status === 401) {
+              router.push("/login");
+              return null;
+            }
 
-        const dogsPerPage = await response.json();
-        dogs.push(...dogsPerPage);
-      }
+            const dogsPerPage = await response.json();
+            dogs.push(...dogsPerPage);
+          } catch {
+            //
+          }
+        }),
+      );
+      // for await (const idsPerPage of chunks) {
+      //   const response = await callApi({
+      //     url: "/dogs",
+      //     method: "POST",
+      //     body: idsPerPage,
+      //   });
+
+      //   if (response.status === 401) {
+      //     router.push("/login");
+      //     return null;
+      //   }
+
+      //   const dogsPerPage = await response.json();
+      //   dogs.push(...dogsPerPage);
+      // }
 
       return dogs;
     },

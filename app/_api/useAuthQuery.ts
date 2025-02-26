@@ -1,3 +1,4 @@
+import { removeAuthStatus } from "@/actions";
 import { callApi } from "@/libs";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ export function useAuthQuery<T>({
       });
 
       if (response.status === 401) {
+        await removeAuthStatus();
         router.push("/login");
         return null;
       }
